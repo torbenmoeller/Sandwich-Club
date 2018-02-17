@@ -13,41 +13,38 @@ public class JsonUtils {
 
     public static Sandwich parseSandwichJson(String json) {
         try {
-            Sandwich sandwich = new Sandwich();
             JSONObject jsonRoot = new JSONObject(json);
-
             JSONObject name = jsonRoot.getJSONObject("name");
 
             String mainName = name.getString("mainName");
-            sandwich.setMainName(mainName);
 
-            JSONArray alsoKnownAs = name.getJSONArray("alsoKnownAs");
-            List<String> alsoKnownList = new ArrayList<>();
-            for (int i = 0; i < alsoKnownAs.length(); i++) {
-                alsoKnownList.add(alsoKnownAs.getString(i));
-            }
-            sandwich.setAlsoKnownAs(alsoKnownList);
+            List<String> alsoKnownAs = convertJSONArrayToStringList(
+                    name.getJSONArray("alsoKnownAs")
+            );
 
             String placeOfOrigin = jsonRoot.getString("placeOfOrigin");
-            sandwich.setPlaceOfOrigin(placeOfOrigin);
 
             String description = jsonRoot.getString("description");
-            sandwich.setDescription(description);
 
             String image = jsonRoot.getString("image");
-            sandwich.setImage(image);
 
-            JSONArray ingredients = jsonRoot.getJSONArray("ingredients");
-            List<String> ingredientsList = new ArrayList<>();
-            for (int i = 0; i < ingredients.length(); i++) {
-                ingredientsList.add(ingredients.getString(i));
-            }
-            sandwich.setIngredients(ingredientsList);
+            List<String> ingredients = convertJSONArrayToStringList(
+                    jsonRoot.getJSONArray("ingredients")
+            );
 
+            Sandwich sandwich = new Sandwich(mainName, alsoKnownAs,  placeOfOrigin,  description,  image, ingredients);
             return sandwich;
         }
         catch(JSONException e){
             return null;
         }
+    }
+
+    private static List<String> convertJSONArrayToStringList(JSONArray jsonArray) throws JSONException {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            list.add(jsonArray.getString(i));
+        }
+        return list;
     }
 }
